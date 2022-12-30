@@ -1,0 +1,20 @@
+{
+  "CONTRIBUTORS": {
+    "USER_NAME$": "開発者のGithub名. 大文字/小文字を区別します",
+    "USER_NAME": {
+      "STANDARD_PR_REVIEWERS$": "この開発者が標準PRを作成したときに割り当てるレビューア. 複数指定する場合は半角カンマで区切ってください. メンションを送信するときの「@」を除いた文字列を指定します",
+      "STANDARD_PR_REVIEWERS": "Hoge, fuga"
+    },
+    "RikiNakayama": {
+      "STANDARD_PR_REVIEWERS": "Junichi-Hosoya, tose-kitabayashi-d"
+    },
+    "Junichi-Hosoya": {
+      "ENABLE_AUTO_MERGE_WHEN_POSSIBLE": false,
+      "PRIVATE_SLACK_CHANNEL_ID": "",
+      "STANDARD_PR_REVIEWERS": "RikiNakayama, tose-kitabayashi-d"
+    },
+    "tose-kitabayashi-d": {
+      "STANDARD_PR_REVIEWERS": "Junichi-Hosoya"
+    }
+  }
+}
