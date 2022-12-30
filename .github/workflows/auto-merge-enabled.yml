@@ -1,4 +1,5 @@
 # GithubのPRのassignees/reviewersを自動設定するワークフロー
+
 # - PR(Standard/Draft)を作成したとき
 #   - assigneesに自分を設定する
 # - PR(Standard)を作成したとき、またはPR(Draft)をPR(Standard)へ変更したとき
@@ -43,7 +44,7 @@ jobs:
             echo "Someone who needs the feature should make it."
             echo "I am not interested in this feature. Nor do I intend to make it available."
             exit 0
-        
+
       # PRがマージできる状態になったら、Slackへ通知する
       - name: Notify to Slack when will can merge PR
         if: ${{ env.ENABLE_AUTO_MERGE_WHEN_POSSIBLE }} != 'true'
