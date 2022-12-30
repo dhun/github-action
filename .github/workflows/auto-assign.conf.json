@@ -10,7 +10,7 @@
     },
     "Junichi-Hosoya": {
       "ENABLE_AUTO_MERGE_WHEN_POSSIBLE": false,
-      "PRIVATE_SLACK_CHANNEL_ID": "",
+      "PRIVATE_SLACK_CHANNEL_ID": "C04GTEMJARL",
       "STANDARD_PR_REVIEWERS": "RikiNakayama, tose-kitabayashi-d"
     },
     "tose-kitabayashi-d": {
