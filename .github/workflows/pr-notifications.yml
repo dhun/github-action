@@ -9,7 +9,7 @@
 #   - レビューアを解除する旨をコメントする
 name: Notify for merge enabled
 on:
-  status:
+  # status:
   check_run:
     types: [created, rerequested, completed, requested_action]
   # check_suite:
