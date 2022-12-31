@@ -23,7 +23,7 @@ jobs:
       - name: Load config JSON file as environment variables
         uses: rgarcia-phi/json-to-variables@v1.1.0
         with:
-          filename: .github/workflows/auto-assign.conf.json
+          filename: .github/workflows/_conf.json
           prefix: CONF
 
       # 開発者毎の設定を遅延解決
