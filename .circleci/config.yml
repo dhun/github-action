@@ -1,0 +1,8 @@
+version: 2.1
+jobs:
+  unit-test:
+    docker:
+      - image: circleci/alpine:latest
+    steps:
+      - checkout
+      - run: echo "hello world"
