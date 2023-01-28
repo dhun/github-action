@@ -11,12 +11,13 @@
 name: Notify when merge enabled
 on:
   # status:
-  # check_run:
-  #   types: [created, rerequested, completed, requested_action]
+  check_run:
+    types: [created, rerequested, completed, requested_action]
   # check_suite:
   #   types: [completed]
-  pull_request:
-    types: [auto_merge_enabled]
+  # pull_request:
+  #   types: [opened, reopened, auto_merge_enabled]
+
   # check_suite:
   #   types: [completed]
 env:
@@ -29,6 +30,7 @@ jobs:
     steps:
       - run: |
           env
+
       # # 設定ファイルのロード
       # - name: Load config JSON file as environment variables
       #   uses: rgarcia-phi/json-to-variables@v1.1.0
