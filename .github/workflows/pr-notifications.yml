@@ -1,5 +1,6 @@
 # GithubのPRのassignees/reviewersを自動設定するワークフロー
-
+#
+# トリガーと振る舞い:
 # - PR(Standard/Draft)を作成したとき
 #   - assigneesに自分を設定する
 # - PR(Standard)を作成したとき、またはPR(Draft)をPR(Standard)へ変更したとき
@@ -10,14 +11,14 @@
 name: Notify for merge enabled
 on:
   # status:
-  # check_run:
-  #   types: [created, rerequested, completed, requested_action]
+  check_run:
+    types: [created, rerequested, completed, requested_action]
   # check_suite:
   #   types: [completed]
   # pull_request:
   #   types: [auto_merge_enabled]
-  check_suite:
-    types: [completed]
+  # check_suite:
+  #   types: [completed]
 env:
   SLACK_ACCESS_TOKEN: ${{secrets.SLACK_ACCESS_TOKEN}}
 
@@ -26,81 +27,81 @@ jobs:
     name: Notify
     runs-on: ubuntu-latest
     steps:
-      # 設定ファイルのロード
-      - name: Load config JSON file as environment variables
-        uses: rgarcia-phi/json-to-variables@v1.1.0
-        with:
-          filename: .github/workflows/_conf.json
-          prefix: CONF
+      # # 設定ファイルのロード
+      # - name: Load config JSON file as environment variables
+      #   uses: rgarcia-phi/json-to-variables@v1.1.0
+      #   with:
+      #     filename: .github/workflows/_conf.json
+      #     prefix: CONF
 
-      # 開発者毎の設定を遅延解決
-      - name: Setupt custom environment from config file
-        run: |
-          echo github.event
-          ENABLE_AUTO_MERGE_WHEN_POSSIBLE="${{ env[format('CONF_CONTRIBUTORS_{0}_ENABLE_AUTO_MERGE_WHEN_POSSIBLE', github.actor)] }}"
-          PRIVATE_SLACK_CHANNEL_ID="${{ env[format('CONF_CONTRIBUTORS_{0}_PRIVATE_SLACK_CHANNEL_ID', github.actor)] }}"
+      # # 開発者毎の設定を遅延解決
+      # - name: Setupt custom environment from config file
+      #   run: |
+      #     echo github.event
+      #     ENABLE_AUTO_MERGE_WHEN_POSSIBLE="${{ env[format('CONF_CONTRIBUTORS_{0}_ENABLE_AUTO_MERGE_WHEN_POSSIBLE', github.actor)] }}"
+      #     PRIVATE_SLACK_CHANNEL_ID="${{ env[format('CONF_CONTRIBUTORS_{0}_PRIVATE_SLACK_CHANNEL_ID', github.actor)] }}"
 
-          echo "ENABLE_AUTO_MERGE_WHEN_POSSIBLE=$ENABLE_AUTO_MERGE_WHEN_POSSIBLE" >> $GITHUB_ENV
-          echo "PRIVATE_SLACK_CHANNEL_ID=$PRIVATE_SLACK_CHANNEL_ID" >> $GITHUB_ENV
+      #     echo "ENABLE_AUTO_MERGE_WHEN_POSSIBLE=$ENABLE_AUTO_MERGE_WHEN_POSSIBLE" >> $GITHUB_ENV
+      #     echo "PRIVATE_SLACK_CHANNEL_ID=$PRIVATE_SLACK_CHANNEL_ID" >> $GITHUB_ENV
 
-      # PRがマージできる状態になったら、自動的にマージする
-      - name: Do auto merge
-        if: ${{ env.ENABLE_AUTO_MERGE_WHEN_POSSIBLE }} == 'true'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            echo "Someone who needs the feature should make it."
-            echo "I am not interested in this feature. Nor do I intend to make it available."
-            exit 0
+      # # PRがマージできる状態になったら、自動的にマージする
+      # - name: Do auto merge
+      #   if: ${{ env.ENABLE_AUTO_MERGE_WHEN_POSSIBLE }} == 'true'
+      #   uses: actions/github-script@v6
+      #   with:
+      #     script: |
+      #       echo "Someone who needs the feature should make it."
+      #       echo "I am not interested in this feature. Nor do I intend to make it available."
+      #       exit 0
 
-      # PRがマージできる状態になったら、Slackへ通知する
-      - name: Notify to Slack when will can merge PR
-        if: ${{ env.ENABLE_AUTO_MERGE_WHEN_POSSIBLE }} != 'true'
-        uses: actions/github-script@v6
-        with:
-          script: |
-            if [ "$PRIVATE_SLACK_CHANNEL_ID" == "" ]; then
-              echo "Your 'PRIVATE_SLACK_CHANNEL_ID' is emply. Abort notify to Slack when will can merge PR."
-              exit 0
-            fi
+      # # PRがマージできる状態になったら、Slackへ通知する
+      # - name: Notify to Slack when will can merge PR
+      #   if: ${{ env.ENABLE_AUTO_MERGE_WHEN_POSSIBLE }} != 'true'
+      #   uses: actions/github-script@v6
+      #   with:
+      #     script: |
+      #       if [ "$PRIVATE_SLACK_CHANNEL_ID" == "" ]; then
+      #         echo "Your 'PRIVATE_SLACK_CHANNEL_ID' is emply. Abort notify to Slack when will can merge PR."
+      #         exit 0
+      #       fi
 
-            SLACK_REQ="$(cat \<<EOF
-            {
-              "channel": "$PRIVATE_SLACK_CHANNEL_ID",
-              "attachments": [
-                {
-                  "blocks": [
-                    {
-                      "type": "section",
-                      "text": {
-                        "type": "mrkdwn",
-                        "text": "<$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID|RP will be can merge>"
-                      }
-                    }
-                  ]
-                }
-              ]
-            }
-            EOF
-            )"
+      #       SLACK_REQ="$(cat \<<EOF
+      #       {
+      #         "channel": "$PRIVATE_SLACK_CHANNEL_ID",
+      #         "attachments": [
+      #           {
+      #             "blocks": [
+      #               {
+      #                 "type": "section",
+      #                 "text": {
+      #                   "type": "mrkdwn",
+      #                   "text": "<$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID|RP will be can merge>"
+      #                 }
+      #               }
+      #             ]
+      #           }
+      #         ]
+      #       }
+      #       EOF
+      #       )"
 
-            STAT_FILE="$(mktemp)"
-            RESP_FILE="$(mktemp)"
+      #       STAT_FILE="$(mktemp)"
+      #       RESP_FILE="$(mktemp)"
 
-            curl -s \
-                -d "$SLACK_REQ" \
-                -w '%{http_code}' \
-                -o $RESP_FILE \
-                -H "Authorization: Bearer ${SLACK_ACCESS_TOKEN}" \
-                -H "Content-type: application/json;charset=utf-8" \
-                -X POST https://slack.com/api/chat.postMessage \
-                > $STAT_FILE
+      #       curl -s \
+      #           -d "$SLACK_REQ" \
+      #           -w '%{http_code}' \
+      #           -o $RESP_FILE \
+      #           -H "Authorization: Bearer ${SLACK_ACCESS_TOKEN}" \
+      #           -H "Content-type: application/json;charset=utf-8" \
+      #           -X POST https://slack.com/api/chat.postMessage \
+      #           > $STAT_FILE
 
-            cat $RESP_FILE | jq
-            STAT="$(cat $STAT_FILE)"
-            ISOK="$(cat $RESP_FILE | jq ".ok")"
+      #       cat $RESP_FILE | jq
+      #       STAT="$(cat $STAT_FILE)"
+      #       ISOK="$(cat $RESP_FILE | jq ".ok")"
 
-            if [ "200" != "$STAT" -o "true" != "$ISOK" ]; then
-                echo "Invalid HTTP status or response from slack.com. status=[$STAT], is_ok=[$ISOK]"
-                exit 9
-            fi
+      #       if [ "200" != "$STAT" -o "true" != "$ISOK" ]; then
+      #           echo "Invalid HTTP status or response from slack.com. status=[$STAT], is_ok=[$ISOK]"
+      #           exit 9
+      #       fi
