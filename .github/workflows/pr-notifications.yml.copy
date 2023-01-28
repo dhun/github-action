@@ -8,7 +8,7 @@
 #   - 重要なファイル(CRITICAL_FILES)が含まれている場合は、責任者(CRITICAL_PR_REVIEWERS)もreviewersに設定する
 # - PRをドラフト状態へ戻したとき
 #   - レビューアを解除する旨をコメントする
-name: Notify when merge enabled
+name: Notify for merge enabled
 on:
   # status:
   check_run:
@@ -27,8 +27,6 @@ jobs:
     name: Notify
     runs-on: ubuntu-latest
     steps:
-      - run: |
-          env
       # # 設定ファイルのロード
       # - name: Load config JSON file as environment variables
       #   uses: rgarcia-phi/json-to-variables@v1.1.0
